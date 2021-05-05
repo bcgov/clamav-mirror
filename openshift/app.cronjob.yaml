@@ -114,7 +114,7 @@ parameters:
     description: Suspend this CronJob
     displayName: Suspend CronJob
     required: false
-    value: false
+    value: "false"
   - name: CPU_REQUEST
     description: Starting amount of CPU the container can use.
     displayName: CPU Request

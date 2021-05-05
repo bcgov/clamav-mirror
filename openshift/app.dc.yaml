@@ -228,7 +228,7 @@ parameters:
     description: Volume space available for Data
     displayName: Data Volume Capacity (use M or G, not Mi or Gi)
     required: true
-    value: 1G
+    value: 1Gi
   - name: DATA_PERSISTENT_VOLUME_CLASS
     description: The storage class of the volume
     displayName: Persistent Volume Class name

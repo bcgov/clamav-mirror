@@ -11,6 +11,7 @@ RUN pip install --no-cache-dir cvdupdate
 
 # Copy Scripts
 COPY src/ $WORKDIR
+RUN chmod +x ./entrypoint.sh
 
 # Start Server
 EXPOSE 8080
