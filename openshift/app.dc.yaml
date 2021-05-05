@@ -139,7 +139,8 @@ objects:
   - apiVersion: v1
     kind: Route
     metadata:
-      haproxy.router.openshift.io/ip_whitelist: 142.34.194.121
+      annotations:
+        haproxy.router.openshift.io/ip_whitelist: 142.34.194.121
       name: "${APP_NAME}-app"
     spec:
       host: "${ROUTE_HOST}"
