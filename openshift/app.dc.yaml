@@ -186,7 +186,7 @@ parameters:
     description: The base docker registry
     displayName: Docker Image Registry
     required: true
-    value: docker.io
+    value: image-registry.openshift-image-registry.svc:5000
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
