@@ -1,7 +1,7 @@
 
 # ClamAV Mirror [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
-![Tests](https://github.com/bcgov/common-hosted-form-service/workflows/Docker/badge.svg)
+[![Docker](https://github.com/bcgov/clamav-mirror/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/bcgov/clamav-mirror/actions/workflows/docker-image.yaml)
 
 ![Image of ClamAV](https://www.clamav.net/assets/clamav-trademark.png)
 
@@ -25,8 +25,6 @@ Run this container to host the ClamAV Database definitions, and leverage a cronj
 
 * [Docker Readme](docker/README.md)
 * [Openshift Readme](openshift/README.md)
-* [Devops Tools Setup](https://github.com/bcgov/nr-showcase-devops-tools)
-* [Product Roadmap](https://github.com/bcgov/common-hosted-form-service/wiki/Product-Roadmap)
 
 ## Getting Help or Reporting an Issue
 
