@@ -218,7 +218,7 @@ parameters:
     description: Maximum amount of memory the container can use.
     displayName: Memory Limit
     required: true
-    value: 256Mi
+    value: 384Mi
   - name: DATA_DIR
     description: Path to data directory
     displayName: Directory to mount for data files

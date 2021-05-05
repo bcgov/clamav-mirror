@@ -129,12 +129,12 @@ parameters:
     description: Starting amount of memory the container can use.
     displayName: Memory Request
     required: true
-    value: 64Mi
+    value: 384Mi
   - name: MEMORY_LIMIT
     description: Maximum amount of memory the container can use.
     displayName: Memory Limit
     required: true
-    value: 256Mi
+    value: 384Mi
   - name: DATA_DIR
     description: Path to data directory
     displayName: Directory to mount for data files
