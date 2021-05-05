@@ -1,0 +1,235 @@
+---
+apiVersion: v1
+kind: Template
+metadata:
+  annotations:
+    description: Caddy Server
+    iconClass: icon-caddy
+    openshift.io/display-name: Caddy Server
+    openshift.io/long-description: |
+      Caddy 2 is a powerful, enterprise-ready, open source web server with automatic HTTPS written in Go.
+    tags: caddy
+  name: "${REPO_NAME}-app-dc"
+labels:
+  app: "${APP_NAME}-app"
+  app.kubernetes.io/component: app
+  app.kubernetes.io/instance: ${INSTANCE}
+  app.kubernetes.io/name: caddy
+  app.kubernetes.io/managed-by: template
+  app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+  app.kubernetes.io/version: "2"
+  app.openshift.io/runtime: golang
+  template: "${REPO_NAME}-app-template"
+objects:
+  - apiVersion: v1
+    kind: ConfigMap
+    metadata:
+      name: "${APP_NAME}-caddyfile"
+    data:
+      Caddyfile: |
+        {
+            admin off
+            auto_https off
+            http_port 8080
+            https_port 8433
+        }
+
+        :8080 {
+            file_server browse
+            root * ${DATA_DIR}/databases
+        }
+  - apiVersion: v1
+    kind: DeploymentConfig
+    metadata:
+      name: "${APP_NAME}-app"
+    spec:
+      replicas: ${{REPLICAS}}
+      selector:
+        app: "${APP_NAME}-app"
+        deploymentconfig: "${APP_NAME}-app"
+        role: app
+      strategy:
+        resources: {}
+        type: Rolling
+      template:
+        metadata:
+          labels:
+            app: "${APP_NAME}-app"
+            app.kubernetes.io/component: app
+            app.kubernetes.io/instance: ${INSTANCE}
+            app.kubernetes.io/name: caddy
+            app.kubernetes.io/managed-by: template
+            app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+            app.kubernetes.io/version: "2"
+            app.openshift.io/runtime: golang
+            deploymentconfig: "${APP_NAME}-app"
+            role: app
+            template: "${REPO_NAME}-app-template"
+        spec:
+          containers:
+            - name: app
+              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:latest"
+              imagePullPolicy: IfNotPresent
+              livenessProbe:
+                tcpSocket:
+                  port: 8080
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 3
+              ports:
+                - containerPort: 8080
+                  name: http
+                - containerPort: 8433
+                  name: https
+              readinessProbe:
+                tcpSocket:
+                  port: 8080
+                periodSeconds: 10
+                timeoutSeconds: 1
+                failureThreshold: 1
+              resources:
+                requests:
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
+                limits:
+                  cpu: ${CPU_LIMIT}
+                  memory: ${MEMORY_LIMIT}
+              env:
+                - name: CVD_DIR
+                  value: "${DATA_DIR}"
+              volumeMounts:
+                - mountPath: /mnt
+                  name: caddyfile
+                  readOnly: true
+                - mountPath: "${DATA_DIR}"
+                  name: data
+          restartPolicy: Always
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - name: caddyfile
+              configMap:
+                defaultMode: 420
+                name: "${APP_NAME}-caddyfile"
+            - name: data
+              persistentVolumeClaim:
+                claimName: "${APP_NAME}-data"
+      test: false
+      triggers:
+        - type: ConfigChange
+        - imageChangeParams:
+            automatic: true
+            containerNames:
+              - app
+            from:
+              kind: ImageStreamTag
+              name: "${REPO_NAME}-app:latest"
+              namespace: "${NAMESPACE}"
+          type: ImageChange
+  - apiVersion: v1
+    kind: PersistentVolumeClaim
+    metadata:
+      name: "${APP_NAME}-data"
+    spec:
+      accessModes:
+        - ReadWriteMany
+      storageClassName: "${DATA_PERSISTENT_VOLUME_CLASS}"
+      resources:
+        requests:
+          storage: "${DATA_VOLUME_CAPACITY}"
+  - apiVersion: v1
+    kind: Route
+    metadata:
+      name: "${APP_NAME}-app"
+    spec:
+      host: "${ROUTE_HOST}"
+      path: /
+      port:
+        targetPort: http
+      tls:
+        insecureEdgeTerminationPolicy: Redirect
+        termination: edge
+      to:
+        kind: Service
+        name: "${APP_NAME}-app"
+        weight: 100
+      wildcardPolicy: None
+  - apiVersion: v1
+    kind: Service
+    metadata:
+      name: "${APP_NAME}-app"
+    spec:
+      ports:
+        - name: http
+          port: 8080
+        - name: https
+          port: 8433
+      selector:
+        app: "${APP_NAME}-app"
+        deploymentconfig: "${APP_NAME}-app"
+        role: app
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: INSTANCE
+    description: The name of this instance of the application
+    displayName: Application Instance Name
+    required: true
+    value: master
+  - name: REPLICAS
+    description: The number of replicas to use.
+    displayName: Replicas
+    required: true
+    value: "2"
+  - name: IMAGE_REGISTRY
+    description: The base docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: docker.io
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  - name: ROUTE_HOST
+    description: The host the route will use to expose service outside cluster
+    displayName: Route host
+    required: true
+  - name: CPU_REQUEST
+    description: Starting amount of CPU the container can use.
+    displayName: CPU Request
+    required: true
+    value: 50m
+  - name: CPU_LIMIT
+    description: Maximum amount of CPU the container can use.
+    displayName: CPU Limit
+    required: true
+    value: 250m
+  - name: MEMORY_REQUEST
+    description: Starting amount of memory the container can use.
+    displayName: Memory Request
+    required: true
+    value: 64Mi
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory the container can use.
+    displayName: Memory Limit
+    required: true
+    value: 256Mi
+  - name: DATA_DIR
+    description: Path to data directory
+    displayName: Directory to mount for data files
+    required: true
+    value: "/mnt/cvdupdate"
+  - name: DATA_VOLUME_CAPACITY
+    description: Volume space available for Data
+    displayName: Data Volume Capacity (use M or G, not Mi or Gi)
+    required: true
+    value: 1G
+  - name: DATA_PERSISTENT_VOLUME_CLASS
+    description: The storage class of the volume
+    displayName: Persistent Volume Class name
+    value: netapp-file-standard

@@ -1,0 +1,11 @@
+{
+    admin off
+    auto_https off
+    http_port 8080
+    https_port 8433
+}
+
+:8080 {
+    file_server browse
+    root * /mnt/cvdupdate/databases
+}

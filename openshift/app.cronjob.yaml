@@ -1,0 +1,151 @@
+---
+apiVersion: v1
+kind: Template
+labels:
+  app: "${APP_NAME}-updater"
+  app.kubernetes.io/component: updater
+  app.kubernetes.io/instance: ${INSTANCE}
+  app.kubernetes.io/name: python
+  app.kubernetes.io/managed-by: template
+  app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+  app.kubernetes.io/version: "3.9"
+  app.openshift.io/runtime: python
+  template: "${REPO_NAME}-updater-template"
+metadata:
+  name: "${REPO_NAME}-updater-dc"
+objects:
+  - apiVersion: batch/v1beta1
+    kind: CronJob
+    metadata:
+      name: "${APP_NAME}-updater"
+    spec:
+      concurrencyPolicy: Replace
+      failedJobsHistoryLimit: 3
+      successfulJobsHistoryLimit: 5
+      startingDeadlineSeconds: 60
+      jobTemplate:
+        metadata:
+          labels:
+            app: "${APP_NAME}-updater"
+            app.kubernetes.io/component: updater
+            app.kubernetes.io/instance: ${INSTANCE}
+            app.kubernetes.io/name: python
+            app.kubernetes.io/managed-by: template
+            app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+            app.kubernetes.io/version: "3.9"
+            app.openshift.io/runtime: python
+            template: "${REPO_NAME}-updater-template"
+        spec:
+          activeDeadlineSeconds: 600
+          backoffLimit: 1
+          completions: 1
+          parallelism: 1
+          template:
+            metadata:
+              labels:
+                app: "${APP_NAME}-updater"
+                app.kubernetes.io/component: updater
+                app.kubernetes.io/instance: ${INSTANCE}
+                app.kubernetes.io/name: python
+                app.kubernetes.io/managed-by: template
+                app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
+                app.kubernetes.io/version: "3.9"
+                app.openshift.io/runtime: python
+                template: "${REPO_NAME}-updater-template"
+            spec:
+              containers:
+                - name: updater
+                  image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:latest"
+                  imagePullPolicy: IfNotPresent
+                  command:
+                    - "./entrypoint.sh"
+                    - "update"
+                  resources:
+                    requests:
+                      cpu: ${CPU_REQUEST}
+                      memory: ${MEMORY_REQUEST}
+                    limits:
+                      cpu: ${CPU_LIMIT}
+                      memory: ${MEMORY_LIMIT}
+                  env:
+                    - name: CVD_DIR
+                      value: "${DATA_DIR}"
+                  volumeMounts:
+                    - mountPath: "${DATA_DIR}"
+                      name: data
+              restartPolicy: Never
+              terminationGracePeriodSeconds: 30
+              volumes:
+                - name: data
+                  persistentVolumeClaim:
+                    claimName: "${APP_NAME}-data"
+      schedule: "${CRON_SCHEDULE}"
+      suspend: "${{SUSPEND_CRON}}"
+parameters:
+  - name: APP_NAME
+    description: Application name
+    displayName: Application name
+    required: true
+  - name: INSTANCE
+    description: The name of this instance of the application
+    displayName: Application Instance Name
+    required: true
+    value: master
+  - name: IMAGE_REGISTRY
+    description: The base docker registry
+    displayName: Docker Image Registry
+    required: true
+    value: docker.io
+  - name: NAMESPACE
+    description: Target namespace reference (i.e. 'wfezkf-dev')
+    displayName: Target Namespace
+    required: true
+  - name: REPO_NAME
+    description: Application repository name
+    displayName: Repository Name
+    required: true
+  # https://crontab.guru/every-8-hours
+  - name: CRON_SCHEDULE
+    description: CronJob crontab schedule
+    displayName: Crontab schedule
+    required: false
+    value: "0 */8 * * *"
+  - name: SUSPEND_CRON
+    description: Suspend this CronJob
+    displayName: Suspend CronJob
+    required: false
+    value: false
+  - name: CPU_REQUEST
+    description: Starting amount of CPU the container can use.
+    displayName: CPU Request
+    required: true
+    value: 50m
+  - name: CPU_LIMIT
+    description: Maximum amount of CPU the container can use.
+    displayName: CPU Limit
+    required: true
+    value: 250m
+  - name: MEMORY_REQUEST
+    description: Starting amount of memory the container can use.
+    displayName: Memory Request
+    required: true
+    value: 64Mi
+  - name: MEMORY_LIMIT
+    description: Maximum amount of memory the container can use.
+    displayName: Memory Limit
+    required: true
+    value: 256Mi
+  - name: DATA_DIR
+    description: Path to data directory
+    displayName: Directory to mount for data files
+    required: true
+    value: "/mnt/cvdupdate"
+  - name: DATA_VOLUME_CAPACITY
+    description: Volume space available for Data
+    displayName: Data Volume Capacity (use M or G, not Mi or Gi)
+    required: true
+    value: 1G
+  - name: DATA_PERSISTENT_VOLUME_CLASS
+    description: The storage class of the volume
+    displayName: Persistent Volume Class name
+    value: netapp-file-standard
