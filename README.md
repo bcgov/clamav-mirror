@@ -1,5 +1,5 @@
 
-# ClamAV Mirror [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Lifecycle:Maturing](https://img.shields.io/badge/Lifecycle-Maturing-007EC6)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
+# ClamAV Mirror [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE) [![Lifecycle:Stable](https://img.shields.io/badge/Lifecycle-Stable-97ca00)](https://github.com/bcgov/repomountie/blob/master/doc/lifecycle-badges.md)
 
 [![Docker](https://github.com/bcgov/clamav-mirror/actions/workflows/docker-image.yaml/badge.svg)](https://github.com/bcgov/clamav-mirror/actions/workflows/docker-image.yaml)
 
