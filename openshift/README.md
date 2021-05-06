@@ -4,11 +4,24 @@ This application can be deployed onto Openshift. This readme will outline how to
 
 ## Table of Contents
 
+- [Infrastructure](#infrastructure)
 - [Openshift Deployment Prerequisites](#openshift-deployment-prerequisites)
 - [Environment Setup - ConfigMaps and Secrets](#environment-setup---configmaps-and-secrets)
 - [Build Config & Deployment](#build-config--deployment)
 - [Templates](#templates)
 - [Pull Request Cleanup](#pull-request-cleanup)
+
+## Infrastructure
+
+This application has a relatively simple architecture to achieve the following:
+
+1. Act as a mirror for the ClamAV Database files within the cluster
+2. Periodically fetch and update the definition files from upstream
+
+![Infrastructure](infrastructure.png)  
+**Figure 1 - General Openshift infrastructure diagram**
+
+We achieve the first objective by leveraging Caddy in High Availability mode to host the files, and utilize an Openshift CronJob to update the definition files 3 times a day using the cvdupdate library. The definition files are stored on a persistent volume claim and updated as needed. In order to minimize the potential attack surface, we drop all network traffic that does not come from the cluster itself in the Openshift route definition.
 
 ## Openshift Deployment Prerequisites
 
