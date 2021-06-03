@@ -37,7 +37,7 @@ objects:
             template: "${REPO_NAME}-updater-template"
         spec:
           activeDeadlineSeconds: 600
-          backoffLimit: 1
+          backoffLimit: 0
           completions: 1
           parallelism: 1
           template:
