@@ -49,3 +49,25 @@ Once you have the mirror running, you can visit <http://localhost:8080> to see w
 ```txt
 DatabaseMirror http://localhost:8080
 ```
+
+### Run (dev & troubleshooting)
+
+some helpful commands for developing and troubleshooting:
+
+```sh
+# build image
+
+# run container and get into bash
+docker run --name clamav --rm -it clamav-mirror bash
+
+# run status
+sh entrypoint.sh status
+
+# check config file and paths
+cat /mnt/cvdupdate/config.json
+ls -laht /mnt/cvdupdate/{logs,databases}
+
+# run update and check files
+sh entrypoint.sh update
+ls -laht /mnt/cvdupdate/databases/*.cvd
+```

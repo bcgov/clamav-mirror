@@ -10,6 +10,10 @@ check_config() {
         cvd config set --config $CVD_DIR/config.json --dbdir $CVD_DIR/databases --logdir $CVD_DIR/logs
         echo "CVD configuration created..."
     fi
+    if [ ! -e $CVD_DIR/databases ]; then
+      echo "creating $CVD_DIR/databases folder"
+      mkdir -p $CVD_DIR/databases
+    fi
 }
 
 show_config() {
