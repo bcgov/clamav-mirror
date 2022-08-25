@@ -11,7 +11,7 @@ check_config() {
         echo "CVD configuration created..."
     fi
     if [ ! -e $CVD_DIR/databases ]; then
-      echo "creating $CVD_DIR/databases folder"
+      echo "Creating $CVD_DIR/databases folder"
       mkdir -p $CVD_DIR/databases
     fi
 }
