@@ -21,4 +21,4 @@ COPY start.py /start.py
 RUN chmod +x /entrypoint.sh
 
 EXPOSE 8080
-CMD /start.py
+CMD ["/start.py"]
