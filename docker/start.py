@@ -3,7 +3,7 @@
 import os
 import concurrent.futures
 
-# Run an update every hour unless one is in progress.
+# Run an update every hour
 os.system("echo \"$(($RANDOM % 60))   *   *   *   *   /entrypoint.sh update > /proc/1/fd/1 2>&1\" > /root.crontab")
 os.system("fcrontab -u root /root.crontab")
 os.system("rm /root.crontab")
