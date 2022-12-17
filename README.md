@@ -14,7 +14,8 @@ Run this container to host the ClamAV Database definitions, and leverage a cronj
     .github/                   - PR and Issue templates
     docker/                    - Docker Root
     ├── src/                   - Docker source files
-    └── Dockerfile             - Main Dockerfile
+    ├── Dockerfile             - Main Dockerfile
+    └── start.py               - Main python script to run both update and serve concurrently
     openshift/                 - OpenShift deployment template files
     CODE-OF-CONDUCT.md         - Code of Conduct
     COMPLIANCE.yaml            - BCGov PIA/STRA compliance status
