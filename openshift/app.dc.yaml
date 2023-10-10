@@ -71,7 +71,8 @@ objects:
               image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:latest"
               securityContext:
                 capabilities:
-                  add: ["NET_BIND_SERVICE"]
+                  add:
+                    - NET_BIND_SERVICE
               imagePullPolicy: IfNotPresent
               livenessProbe:
                 tcpSocket:
