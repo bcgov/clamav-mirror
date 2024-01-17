@@ -21,6 +21,22 @@ labels:
   app.openshift.io/runtime: golang
   template: "${REPO_NAME}-app-template"
 objects:
+  - apiVersion: networking.k8s.io/v1
+    kind: NetworkPolicy
+    metadata:
+      name: "allow-openshift-ingress-to-${APP_NAME}-app"
+    spec:
+      podSelector:
+        matchLabels:
+          app: "${APP_NAME}-app"
+          role: app
+      ingress:
+        - from:
+            - namespaceSelector:
+                matchLabels:
+                  network.openshift.io/policy-group: ingress
+      policyTypes:
+        - Ingress
   - apiVersion: v1
     kind: ConfigMap
     metadata:
