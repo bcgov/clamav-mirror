@@ -53,7 +53,7 @@ parameters:
     description: Base Image to build from
     displayName: Base Image
     required: true
-    value: docker.io/python:3.9-alpine
+    value: docker.io/python:3.11-alpine
   - name: REPO_NAME
     description: Application repository name
     displayName: Repository Name
