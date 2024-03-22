@@ -1,0 +1,33 @@
+name: Push
+
+env:
+  APP_NAME: clamav-mirror
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*.*.*
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build & Push
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build & Push
+        uses: ./.github/actions/build-push-container
+        with:
+          context: ./docker
+          image_name: ${{ env.APP_NAME }}
+          github_username: ${{ github.repository_owner }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          dockerhub_username: ${{ secrets.DOCKERHUB_USERNAME }}
+          dockerhub_token: ${{ secrets.DOCKERHUB_TOKEN }}
