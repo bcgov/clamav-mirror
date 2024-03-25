@@ -21,8 +21,8 @@ labels:
   app.openshift.io/runtime: golang
   template: "${REPO_NAME}-app-template"
 objects:
-  - apiVersion: networking.k8s.io/v1
-    kind: NetworkPolicy
+  - kind: NetworkPolicy
+    apiVersion: networking.k8s.io/v1
     metadata:
       name: "allow-openshift-ingress-to-${APP_NAME}-app"
     spec:
@@ -37,8 +37,8 @@ objects:
                   network.openshift.io/policy-group: ingress
       policyTypes:
         - Ingress
-  - apiVersion: v1
-    kind: ConfigMap
+  - kind: ConfigMap
+    apiVersion: v1
     metadata:
       name: "${APP_NAME}-caddyfile"
     data:
@@ -52,10 +52,11 @@ objects:
 
         :8080 {
             file_server browse
+            log
             root * ${DATA_DIR}/databases
         }
-  - apiVersion: v1
-    kind: DeploymentConfig
+  - kind: DeploymentConfig
+    apiVersion: v1
     metadata:
       name: "${APP_NAME}-app"
     spec:
@@ -84,12 +85,12 @@ objects:
         spec:
           containers:
             - name: app
-              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:latest"
+              image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}:${IMAGE_TAG}"
               securityContext:
                 capabilities:
                   add:
                     - NET_BIND_SERVICE
-              imagePullPolicy: IfNotPresent
+              imagePullPolicy: Always
               livenessProbe:
                 tcpSocket:
                   port: 8080
@@ -136,15 +137,6 @@ objects:
       test: false
       triggers:
         - type: ConfigChange
-        - imageChangeParams:
-            automatic: true
-            containerNames:
-              - app
-            from:
-              kind: ImageStreamTag
-              name: "${REPO_NAME}-app:latest"
-              namespace: "${NAMESPACE}"
-          type: ImageChange
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
@@ -208,15 +200,22 @@ parameters:
     description: The base docker registry
     displayName: Docker Image Registry
     required: true
-    value: image-registry.openshift-image-registry.svc:5000
+    value: ghcr.io
+  - name: IMAGE_TAG
+    description: The docker image tag
+    displayName: Docker Image Tag
+    required: true
+    value: latest
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
     required: true
+    value: bcgov
   - name: REPO_NAME
     description: Application repository name
     displayName: Repository Name
     required: true
+    value: clamav-mirror
   - name: ROUTE_HOST
     description: The host the route will use to expose service outside cluster
     displayName: Route host

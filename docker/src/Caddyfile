@@ -7,5 +7,6 @@
 
 :8080 {
     file_server browse
+    log
     root * /mnt/cvdupdate/databases
 }
