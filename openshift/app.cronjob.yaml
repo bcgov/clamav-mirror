@@ -8,14 +8,14 @@ labels:
   app.kubernetes.io/name: python
   app.kubernetes.io/managed-by: template
   app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
-  app.kubernetes.io/version: "3.9"
+  app.kubernetes.io/version: "3.12"
   app.openshift.io/runtime: python
   template: "${REPO_NAME}-updater-template"
 metadata:
   name: "${REPO_NAME}-updater-dc"
 objects:
-  - apiVersion: batch/v1beta1
-    kind: CronJob
+  - kind: CronJob
+    apiVersion: batch/v1
     metadata:
       name: "${APP_NAME}-updater"
     spec:
@@ -32,7 +32,7 @@ objects:
             app.kubernetes.io/name: python
             app.kubernetes.io/managed-by: template
             app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
-            app.kubernetes.io/version: "3.9"
+            app.kubernetes.io/version: "3.12"
             app.openshift.io/runtime: python
             template: "${REPO_NAME}-updater-template"
         spec:
@@ -55,7 +55,7 @@ objects:
             spec:
               containers:
                 - name: updater
-                  image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}-app:latest"
+                  image: "${IMAGE_REGISTRY}/${NAMESPACE}/${REPO_NAME}:${IMAGE_TAG}"
                   imagePullPolicy: IfNotPresent
                   command:
                     - "./entrypoint.sh"
@@ -95,15 +95,22 @@ parameters:
     description: The base docker registry
     displayName: Docker Image Registry
     required: true
-    value: image-registry.openshift-image-registry.svc:5000
+    value: ghcr.io
+  - name: IMAGE_TAG
+    description: The docker image tag
+    displayName: Docker Image Tag
+    required: true
+    value: latest
   - name: NAMESPACE
     description: Target namespace reference (i.e. 'wfezkf-dev')
     displayName: Target Namespace
     required: true
+    value: bcgov
   - name: REPO_NAME
     description: Application repository name
     displayName: Repository Name
     required: true
+    value: clamav-mirror
   # https://crontab.guru/every-8-hours
   - name: CRON_SCHEDULE
     description: CronJob crontab schedule
