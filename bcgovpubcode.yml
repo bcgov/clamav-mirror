@@ -1,0 +1,38 @@
+---
+data_management_roles:
+  data_custodian: Fraser Marshall
+  product_owner: Shabari Khaniyan Kunnumel
+product_external_dependencies:
+  notification_standard: []
+  other_dependencies: https://github.com/Cisco-Talos/cvdupdate
+product_information:
+  api_specifications:
+    - https://github.com/bcgov/clamav-mirror/blob/master/README.md
+  business_capabilities_custom: Anti-virus file scanning
+  business_capabilities_standard:
+    - Other
+  ministry:
+    - Water, Land and Resource Stewardship
+  product_acronym: CAVMS
+  product_description: >-
+    A lightweight containerized ClamAV Mirror Service using CVD-Update and
+    Caddy. Use this mirror service for your ClamAV definition updates to reduce
+    external network traffic.
+  product_name: ClamAV Mirror Service
+  product_status: stable
+  product_urls:
+    - https://clamav-mirror.apps.silver.devops.gov.bc.ca
+  program_area: >-
+    Natural Resource Information and Digital Services - Development and Digital
+    Services
+product_technology_information:
+  backend_frameworks: []
+  backend_languages_version:
+    - name: Shell
+      version: '5.2'
+    - name: Python
+      version: '3.12'
+  frontend_languages: []
+  hosting_platforms:
+    - Private-Cloud-Openshift
+version: 1
