@@ -1,4 +1,4 @@
-FROM docker.io/python:3.12-alpine
+FROM docker.io/python:3.13-alpine
 ENV PYTHONUNBUFFERED 1
 WORKDIR /opt/app-root/src
 
