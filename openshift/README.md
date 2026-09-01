@@ -1,6 +1,6 @@
 # Application on Openshift
 
-This application can be deployed onto Openshift. This readme will outline how to setup and configure an Openshift project to get the application to a deployable state. This document assumes a working knowledge of Kubernetes/Openshift container orchestration concepts (i.e. buildconfigs, deployconfigs, imagestreams, secrets, configmaps, routes, networkpolicies, etc)
+This application can be deployed onto Openshift. This readme will outline how to setup and configure an Openshift project to get the application to a deployable state. This document assumes a working knowledge of Kubernetes/Openshift container orchestration concepts (i.e. buildconfigs, deployments, imagestreams, secrets, configmaps, routes, networkpolicies, etc)
 
 ## Table of Contents
 
@@ -34,9 +34,9 @@ This application is currently designed as a single application pod deployment. I
 
 The templates are mainly used for defining the yaml manifests needed for this application to run and update correctly in an Openshift environment.
 
-### Deployment Configurations
+### Deployments
 
-Deployment configurations will emit and handle the deployment lifecycles of running containers based off of the previously built images. They generally contain a deploymentconfig, a service, and a route.
+Deployments will emit and handle the deployment lifecycles of running containers based off of the previously built images. They generally contain a deployment, a service, and a route.
 
 Our application template take in mainly the following parameters:
 
@@ -53,13 +53,13 @@ Deployment invocation can be done manually with the following for example:
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 
-oc process -n $NAMESPACE -f openshift/app.dc.yaml -p APP_NAME=$APP_NAME -p INSTANCE=master -p NAMESPACE=$NAMESPACE -p ROUTE_HOST=clamav-mirror.apps.silver.devops.gov.bc.ca -o yaml | oc apply -n $NAMESPACE -f -
+oc process -n $NAMESPACE -f openshift/app.deploy.yaml -p APP_NAME=$APP_NAME -p INSTANCE=master -p NAMESPACE=$NAMESPACE -p ROUTE_HOST=clamav-mirror.apps.silver.devops.gov.bc.ca -o yaml | oc apply -n $NAMESPACE -f -
 ```
 
-Due to the triggers that are set in the deploymentconfig, the deployment will begin automatically. However, you can deploy manually by use the following command for example:
+The deployment should begin automatically. However, you can also deploy manually with the following command for example:
 
 ```sh
-oc rollout -n $NAMESPACE latest dc/<buildname>
+oc rollout -n $NAMESPACE latest deployment/<buildname>
 ```
 
 *Note: Remember to swap out the bracketed values with the appropriate values!*
