@@ -55,19 +55,19 @@ objects:
             log
             root * ${DATA_DIR}/databases
         }
-  - kind: DeploymentConfig
-    apiVersion: v1
+  - kind: Deployment
+    apiVersion: apps/v1
     metadata:
       name: "${APP_NAME}-app"
     spec:
       replicas: ${{REPLICAS}}
       selector:
-        app: "${APP_NAME}-app"
-        deploymentconfig: "${APP_NAME}-app"
-        role: app
+        matchLabels:
+          app: "${APP_NAME}-app"
+          deployment: "${APP_NAME}-app"
+          role: app
       strategy:
-        resources: {}
-        type: Rolling
+        type: RollingUpdate
       template:
         metadata:
           labels:
@@ -79,7 +79,7 @@ objects:
             app.kubernetes.io/part-of: ${APP_NAME}-${INSTANCE}
             app.kubernetes.io/version: "2"
             app.openshift.io/runtime: golang
-            deploymentconfig: "${APP_NAME}-app"
+            deployment: "${APP_NAME}-app"
             role: app
             template: "${REPO_NAME}-app-template"
         spec:
@@ -134,9 +134,6 @@ objects:
             - name: data
               persistentVolumeClaim:
                 claimName: "${APP_NAME}-data"
-      test: false
-      triggers:
-        - type: ConfigChange
   - apiVersion: v1
     kind: PersistentVolumeClaim
     metadata:
@@ -179,7 +176,7 @@ objects:
           port: 8433
       selector:
         app: "${APP_NAME}-app"
-        deploymentconfig: "${APP_NAME}-app"
+        deployment: "${APP_NAME}-app"
         role: app
 parameters:
   - name: APP_NAME
