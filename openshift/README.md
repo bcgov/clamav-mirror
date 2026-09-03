@@ -53,7 +53,7 @@ Deployment invocation can be done manually with the following for example:
 export NAMESPACE=<yournamespace>
 export APP_NAME=<yourappshortname>
 
-oc process -n $NAMESPACE -f openshift/app.deploy.yaml -p APP_NAME=$APP_NAME -p INSTANCE=master -p NAMESPACE=$NAMESPACE -p ROUTE_HOST=clamav-mirror.apps.silver.devops.gov.bc.ca -o yaml | oc apply -n $NAMESPACE -f -
+oc process -n $NAMESPACE -f openshift/app.deploy.yaml -p APP_NAME=$APP_NAME -p INSTANCE=master -p NAMESPACE=bcgov -p ROUTE_HOST=clamav-mirror.apps.silver.devops.gov.bc.ca -o yaml | oc apply -n $NAMESPACE -f -
 ```
 
 The deployment should begin automatically. However, you can also deploy manually with the following command for example:
